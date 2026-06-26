@@ -1,0 +1,28 @@
+# ── OS / Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# ── Editor / IDE ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*~
+
+# ── Dev ──────────────────────────────────────────────────────────────────────
+node_modules/
+package-lock.json
+
+# ── Build-Artefakte / Pakete ─────────────────────────────────────────────────
+*.zip
+*.crx
+*.pem
+dist/
+web-ext-artifacts/
+
+# ── Geheimnisse (niemals committen!) ─────────────────────────────────────────
+# Falls du Telemetrie aktivierst: lege Endpoint/Secret nur lokal an.
+*.secret
+.env
+.env.*

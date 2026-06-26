@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang="de">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Streamblock — Detail-Ansicht</title>
+
+  <link rel="stylesheet" href="detail.css" />
+
+</head>
+
+<body>
+
+  <header class="d-top">
+
+    <div class="d-brand">
+
+      <span class="d-logo">
+
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+
+          <path d="M12 3 L19.5 6 V12.3 C19.5 16.5 16 19.4 12 21 C8 19.4 4.5 16.5 4.5 12.3 V6 Z" fill="#fff"/>
+
+          <path d="M8.6 12 l2.5 2.5 l4.5-4.8" fill="none" stroke="#6D28D9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+
+        </svg>
+
+      </span>
+
+      <div class="d-brand-text">
+
+        <div class="d-title">Streamblock <span data-i18n="detail.title">Detail-Ansicht</span></div>
+
+        <div class="d-sub" data-i18n="detail.subtitle">Echtzeit-Übersicht aller geblockten Werbung &amp; eigene Filter</div>
+
+      </div>
+
+    </div>
+
+    <span class="d-badge" data-i18n="detail.badge">Supporter</span>
+
+  </header>
+
+
+
+  <main class="d-main">
+
+    <div class="d-kpis">
+
+      <div class="d-kpi"><span class="d-kpi-label" data-i18n="detail.kpi.total">Gesamt geblockt</span><b class="d-kpi-num" id="kpiTotal">–</b></div>
+
+      <div class="d-kpi"><span class="d-kpi-label" data-i18n="detail.kpi.network">Netzwerk-Blocks</span><b class="d-kpi-num" id="kpiNet">–</b></div>
+
+      <div class="d-kpi"><span class="d-kpi-label" data-i18n="detail.kpi.video">Video-Ads</span><b class="d-kpi-num" id="kpiAds">–</b></div>
+
+    </div>
+
+
+
+    <section class="d-card d-live">
+
+      <div class="d-card-head">
+
+        <h2><span data-i18n="detail.live.title">Live geblockt</span> <span class="d-pill" data-i18n="detail.live.pill">echte Daten</span></h2>
+
+        <span class="d-live-total" id="liveTotal"></span>
+
+      </div>
+
+      <div class="d-rows" id="liveLog"><div class="d-empty" data-i18n="detail.live.loading">Lade echte Blocks …</div></div>
+
+      <div class="d-live-note">
+
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+
+        <span id="liveNoteText" data-i18n-html="detail.live.note">Nur die letzten <b>0</b> Einträge sichtbar — das vollständige Live-Log (mit voller URL, Tab &amp; Zeitstempel) ist Supporter-exklusiv.</span>
+
+      </div>
+
+    </section>
+
+
+
+    <div class="d-lockwrap">
+
+      <div class="d-grid" aria-hidden="true">
+
+
+
+        <section class="d-card d-card-wide">
+
+          <div class="d-card-head"><h2 data-i18n="detail.locked.log">Vollständiges Live-Log</h2><span class="d-pill" data-i18n="detail.locked.searchable">durchsuchbar</span></div>
+
+          <div class="d-rows">
+
+            <div class="d-row"><span class="d-tag t-tracker">TRACKER</span><span class="d-url">doubleclick.net/pagead/…</span><span class="d-time">jetzt</span><span class="d-cnt">128</span></div>
+
+            <div class="d-row"><span class="d-tag t-ad">AD</span><span class="d-url">googlesyndication.com/…</span><span class="d-time">2s</span><span class="d-cnt">94</span></div>
+
+            <div class="d-row"><span class="d-tag t-ad">AD</span><span class="d-url">ads.twitch.tv/v1/…</span><span class="d-time">4s</span><span class="d-cnt">61</span></div>
+
+            <div class="d-row"><span class="d-tag t-tracker">TRACKER</span><span class="d-url">hotjar.com/api/…</span><span class="d-time">9s</span><span class="d-cnt">37</span></div>
+
+          </div>
+
+        </section>
+
+
+
+        <section class="d-card">
+
+          <div class="d-card-head"><h2 data-i18n="detail.locked.categories">Kategorien</h2></div>
+
+          <div class="d-donut"></div>
+
+          <div class="d-legend">
+
+            <span><i class="lg-a"></i><span data-i18n="detail.locked.ads">Werbung</span></span>
+
+            <span><i class="lg-b"></i><span data-i18n="detail.locked.tracking">Tracking</span></span>
+
+            <span><i class="lg-c"></i><span data-i18n="detail.locked.consent">Consent</span></span>
+
+          </div>
+
+        </section>
+
+
+
+        <section class="d-card d-card-wide">
+
+          <div class="d-card-head"><h2 data-i18n="detail.locked.history">Verlauf (24 h)</h2></div>
+
+          <div class="d-chart">
+
+            <span style="height:38%"></span><span style="height:55%"></span><span style="height:42%"></span>
+
+            <span style="height:70%"></span><span style="height:60%"></span><span style="height:85%"></span>
+
+            <span style="height:52%"></span><span style="height:74%"></span><span style="height:48%"></span>
+
+            <span style="height:66%"></span><span style="height:90%"></span><span style="height:58%"></span>
+
+          </div>
+
+        </section>
+
+
+
+        <section class="d-card">
+
+          <div class="d-card-head"><h2 data-i18n="detail.locked.filters">Eigene Filter-URLs</h2></div>
+
+          <div class="d-input"><span>https://deine-werbe-url.com/*</span><span class="d-add" data-i18n="detail.locked.add">+ Hinzufügen</span></div>
+
+          <div class="d-rows d-rows-sm">
+
+            <div class="d-row"><span class="d-tag t-custom">EIGENE</span><span class="d-url">werbung.example.com</span><span class="d-cnt">×</span></div>
+
+            <div class="d-row"><span class="d-tag t-custom">EIGENE</span><span class="d-url">popup-ads.test/*</span><span class="d-cnt">×</span></div>
+
+          </div>
+
+        </section>
+
+
+
+      </div>
+
+
+
+      <div class="d-gate">
+
+        <div class="d-gate-card">
+
+          <span class="d-lock">
+
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+
+          </span>
+
+          <h1 data-i18n="detail.gate.title">Mehr Insights — bald verfügbar</h1>
+
+          <p data-i18n-html="detail.gate.lead">
+
+            Du siehst oben bereits <strong>echte, live geblockte Anfragen</strong>.
+
+            Geplant für eine zukünftige Supporter-Version:
+
+          </p>
+
+          <ul class="d-feats">
+
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="detail.gate.feat1">Vollständiges Live-Log mit voller URL, Tab &amp; Zeit</span></li>
+
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="detail.gate.feat2">Eigene Werbe-URLs hinzufügen &amp; verwalten</span></li>
+
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="detail.gate.feat3">Cookie-Banner-Killer – nie wieder „Akzeptieren“</span></li>
+
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="detail.gate.feat4">Anti-Captcha – seltener „Ich bin kein Roboter“</span></li>
+
+          </ul>
+
+
+
+          <p class="d-donate-note" data-i18n="detail.gate.donateNote">Wähle deinen Betrag auf unserer Spenden-Seite — PayPal, Karte, Apple Pay, Google Pay oder Crypto.</p>
+
+
+
+          <div class="d-pay-chips" data-i18n-aria="detail.gate.payAria" aria-label="Zahlungsarten">
+
+            <span class="d-pay-chip d-pay-chip--gpay" title="Google Pay">
+
+              <img class="d-pay-logo d-pay-logo--gpay" src="../icons/google-pay.svg" width="46" height="18" alt="Google Pay" />
+
+            </span>
+
+            <span class="d-pay-chip d-pay-chip--paypal" title="PayPal">
+
+              <img class="d-pay-logo d-pay-logo--paypal" src="../icons/paypal.svg" width="18" height="22" alt="PayPal" />
+
+            </span>
+
+          </div>
+
+
+
+          <a class="d-donate" href="https://streamblock.online/support" id="detailDonateBtn" target="_blank" rel="noopener">
+
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+            <span data-i18n="detail.gate.donateBtn">Zur Spenden-Seite</span>
+
+          </a>
+
+          <small><span data-i18n="detail.gate.foot">Voluntary support ·</span> <a href="https://streamblock.online/support" target="_blank" rel="noopener">streamblock.online/support</a></small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+
+  <script src="../i18n.js"></script>
+
+  <script src="detail.js"></script>
+
+</body>
+
+</html>
+

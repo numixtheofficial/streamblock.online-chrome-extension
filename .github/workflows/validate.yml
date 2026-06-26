@@ -1,0 +1,42 @@
+name: Validate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: JavaScript-Syntax prüfen (node --check)
+        run: |
+          set -e
+          for f in $(find . -name '*.js' -not -path './node_modules/*'); do
+            echo "check $f"
+            node --check "$f"
+          done
+
+      - name: JSON validieren (manifest.json, rules.json)
+        run: |
+          set -e
+          for f in src/manifest.json src/rules.json; do
+            echo "validate $f"
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))"
+          done
+
+      - name: rules.json ist aktuell (build-rules.js)
+        run: |
+          node scripts/build-rules.js
+          if ! git diff --quiet -- src/rules.json; then
+            echo "::error::rules.json ist nicht aktuell. Bitte 'node scripts/build-rules.js' ausführen und committen."
+            git --no-pager diff --stat -- src/rules.json
+            exit 1
+          fi

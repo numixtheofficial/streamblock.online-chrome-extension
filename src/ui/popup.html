@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Streamblock</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="header">
+      <div class="header-logo">
+        <span class="logo-badge" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3 L19.5 6 V12.3 C19.5 16.5 16 19.4 12 21 C8 19.4 4.5 16.5 4.5 12.3 V6 Z" fill="#fff"/>
+            <path d="M8.6 12 l2.5 2.5 l4.5-4.8" fill="none" stroke="#6D28D9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <div class="header-text">
+          <div class="header-title">Stream<span class="brand-accent">block</span></div>
+          <div class="header-sub">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText" data-i18n="status.active">Aktiv · Werbung blockiert</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="openSettings" class="btn-icon" type="button" data-i18n-title="settings.title" data-i18n-aria="settings.title" title="Einstellungen">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+        <button id="openDetails" class="btn-details" type="button" data-i18n-title="header.detailsTitle" title="Detail-Ansicht öffnen">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 2.5h5v4h-5zM9.5 2.5h5v2h-5zM9.5 6h5v1.5h-5zM1.5 8.5h5v5h-5zM9.5 9h5v4.5h-5z"/></svg>
+          <span data-i18n="header.details">Details</span>
+        </button>
+        <label class="toggle" data-i18n-title="header.toggleTitle" title="Ad-Blocker ein/aus">
+          <input type="checkbox" id="enabledToggle" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </header>
+
+  <section class="stats-block" data-i18n-aria="stats.aria" aria-label="Statistik">
+      <div class="stats-main">
+        <div class="stats-glow" aria-hidden="true"></div>
+        <div class="stats-total" id="totalBlocked">0</div>
+        <div class="stats-label" data-i18n="stats.totalLabel">Werbung &amp; Tracker geblockt</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-chip">
+          <span class="stat-ico ico-video" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.5v9l7.5-4.5z"/></svg>
+          </span>
+          <span class="stat-val" id="adBreaks">0</span>
+          <span class="stat-lbl" data-i18n="stats.videoAds">Video-Ads</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-ico ico-shield" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0.5L2 3v4.6c0 3.7 2.6 6 6 7.4 3.4-1.4 6-3.7 6-7.4V3L8 0.5z"/></svg>
+          </span>
+          <span class="stat-val" id="networkBlocks">0</span>
+          <span class="stat-lbl" data-i18n="stats.requests">Requests</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-ico ico-clock" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.9 7.3L8.9 4H7.3v5.1l3.6 2.1.8-1.3-2.8-1.6z"/></svg>
+          </span>
+          <span class="stat-val" id="timeSaved">0s</span>
+          <span class="stat-lbl" data-i18n="stats.timeSaved">Zeit gespart</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-methods">
+      <div class="section-head">
+        <h2 class="section-title" data-i18n="methods.title">Schutz-Methoden</h2>
+        <span class="section-hint" data-i18n="methods.hint">pro Plattform</span>
+      </div>
+
+      <div class="glass-tabs" data-active="twitch" data-i18n-aria="tabs.aria" role="tablist" aria-label="Plattformen">
+        <div class="glass-tabs-track">
+          <div class="tab-glass-thumb" id="tabGlassThumb" aria-hidden="true"></div>
+          <button type="button" class="platform-tab is-active" data-tab="twitch" role="tab" aria-selected="true" aria-controls="panel-twitch" id="tab-twitch">
+            <span class="tab-dot tab-dot-twitch" aria-hidden="true"></span>
+            <span class="tab-label" data-i18n="tabs.twitch">Twitch</span>
+          </button>
+          <button type="button" class="platform-tab" data-tab="youtube" role="tab" aria-selected="false" aria-controls="panel-youtube" id="tab-youtube">
+            <span class="tab-dot tab-dot-youtube" aria-hidden="true"></span>
+            <span class="tab-label" data-i18n="tabs.youtube">YouTube</span>
+          </button>
+          <button type="button" class="platform-tab" data-tab="global" role="tab" aria-selected="false" aria-controls="panel-global" id="tab-global">
+            <span class="tab-dot tab-dot-global" aria-hidden="true"></span>
+            <span class="tab-label" data-i18n="tabs.global">Global</span>
+          </button>
+          <button type="button" class="platform-tab" data-tab="more" role="tab" aria-selected="false" aria-controls="panel-more" id="tab-more">
+            <span class="tab-label" data-i18n="tabs.more">Mehr</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+      <div class="tab-panels">
+
+        <div class="tab-panel is-active" data-panel="twitch" id="panel-twitch" role="tabpanel" aria-labelledby="tab-twitch">
+          <p class="tab-hint tab-hint-twitch" data-i18n="hint.twitch">Video-Ads auf Twitch – kurzer Quali-Drop beim Umschalten auf den Backup-Stream ist normal.</p>
+          <div class="strategy-list" id="methodList">
+
+            <div class="strategy-item" data-reload="true">
+              <div class="strategy-icon active" data-icon="streamSwap"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.streamSwap.name" data-i18n-key="method.streamSwap.name">Stream-Swap</div>
+                <div class="strategy-desc" data-i18n="method.streamSwap.desc">Werbefreier Backup-Stream bei Twitch-Video-Ads.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="streamSwap" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="strategy-item" data-reload="true">
+              <div class="strategy-icon active" data-icon="strip"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.strip.name" data-i18n-key="method.strip.name">Ad-Segmente entfernen</div>
+                <div class="strategy-desc" data-i18n="method.strip.desc">Schneidet eingebettete Werbe-Stücke aus dem Stream.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="strip" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="strategy-item" data-reload="true">
+              <div class="strategy-icon active" data-icon="spoof"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.spoof.name" data-i18n-key="method.spoof.name">player_type Spoof</div>
+                <div class="strategy-desc" data-i18n="method.spoof.desc">Tarnt den Player – Twitch liefert oft gar keine Ads.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="spoof" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="strategy-item" data-reload="false">
+              <div class="strategy-icon active" data-icon="dom"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.dom.name" data-i18n-key="method.dom.name">DOM Ad-Remover</div>
+                <div class="strategy-desc" data-i18n="method.dom.desc">Blendet Banner &amp; Display-Werbung in der Oberfläche aus.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="dom" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="youtube" id="panel-youtube" role="tabpanel" aria-labelledby="tab-youtube" hidden>
+          <p class="tab-hint tab-hint-youtube" data-i18n="hint.youtube">Änderungen an YouTube-Methoden laden den offenen Tab automatisch neu.</p>
+          <div class="strategy-list">
+
+            <div class="strategy-item" data-reload="true">
+              <div class="strategy-icon active" data-icon="youtube"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.youtube.name" data-i18n-key="method.youtube.name">YouTube Ad-Block</div>
+                <div class="strategy-desc" data-i18n="method.youtube.desc">Schneidet Video-Werbung heraus &amp; überspringt Ads.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="youtube" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="strategy-item" data-reload="true">
+              <div class="strategy-icon active" data-icon="youtubeDai"></div>
+              <div class="strategy-info">
+                <div class="strategy-name">
+                  <span data-i18n="method.youtubeDai.name" data-i18n-key="method.youtubeDai.name">SSAI-Strip</span>
+                  <span class="scope-badge scope-beta" data-i18n="badge.beta">Beta</span>
+                </div>
+                <div class="strategy-desc" data-i18n="method.youtubeDai.desc">Entfernt server-seitig eingebaute Ads (DAI). Bei Problemen ausschalten.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="youtubeDai" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="global" id="panel-global" role="tabpanel" aria-labelledby="tab-global" hidden>
+          <p class="tab-hint tab-hint-global" data-i18n="hint.global">Schutz auf allen Webseiten – unabhängig von Twitch oder YouTube.</p>
+          <div class="strategy-list">
+
+            <div class="strategy-item" data-reload="false">
+              <div class="strategy-icon active" data-icon="network"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.network.name" data-i18n-key="method.network.name">Network-Blocking</div>
+                <div class="strategy-desc" data-i18n="method.network.desc">Blockt ~330 Werbe-, Tracking- &amp; Consent-Server.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="network" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="strategy-item" data-reload="false">
+              <div class="strategy-icon active" data-icon="cosmetic"></div>
+              <div class="strategy-info">
+                <div class="strategy-name" data-i18n="method.cosmetic.name" data-i18n-key="method.cosmetic.name">Cosmetic-Filter</div>
+                <div class="strategy-desc" data-i18n="method.cosmetic.desc">Blendet Banner, AdSense &amp; Werbe-Elemente per CSS aus.</div>
+              </div>
+              <label class="toggle toggle-sm">
+                <input type="checkbox" class="method-toggle" data-method="cosmetic" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="more" id="panel-more" role="tabpanel" aria-labelledby="tab-more" hidden>
+
+          <div class="more-block">
+            <h3 class="more-title" data-i18n="more.supporterTitle">Supporter-Features</h3>
+            <div class="strategy-list">
+
+              <div class="strategy-item locked-item" data-open-details>
+                <div class="strategy-icon locked" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                </div>
+                <div class="strategy-info">
+                  <div class="strategy-name">
+                    <span data-i18n="pro.cookie.name">Cookie-Banner-Killer</span>
+                    <span class="scope-badge scope-pro" data-i18n="badge.pro">Pro</span>
+                  </div>
+                  <div class="strategy-desc" data-i18n="pro.cookie.desc">Lehnt Cookie-Banner automatisch ab.</div>
+                </div>
+                <span class="lock-pill" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                </span>
+              </div>
+
+              <div class="strategy-item locked-item" data-open-details>
+                <div class="strategy-icon locked" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                </div>
+                <div class="strategy-info">
+                  <div class="strategy-name">
+                    <span data-i18n="pro.captcha.name">Anti-Captcha</span>
+                    <span class="scope-badge scope-pro" data-i18n="badge.pro">Pro</span>
+                  </div>
+                  <div class="strategy-desc" data-i18n="pro.captcha.desc">Weniger Captchas durch Tracking-Block.</div>
+                </div>
+                <span class="lock-pill" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="donate-card">
+            <div class="donate-head">
+              <span class="donate-ico" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.3 2 5 5.2 5c2 0 3.4 1.1 4.1 2.3l.7 1 .7-1C11.5 6.1 12.8 5 14.8 5 18 5 19.6 8.3 22 11.7 19.5 16.4 12 21 12 21z"/></svg>
+              </span>
+              <div>
+                <div class="donate-title" data-i18n="donate.title">Support development</div>
+                <div class="donate-sub" data-i18n="donate.sub">Freiwillig — Betrag unten eingeben, dann mit Karte, Apple Pay, Google Pay oder PayPal zahlen.</div>
+              </div>
+            </div>
+
+            <div class="donate-pay-chips" data-i18n-aria="donate.payAria" aria-label="Zahlungsarten">
+              <span class="donate-chip" data-i18n="donate.chip.card">Credit card</span>
+              <span class="donate-chip" data-i18n="donate.chip.debit">Debit</span>
+              <span class="donate-chip donate-chip--apple" data-i18n="donate.chip.apple">Apple Pay</span>
+              <span class="donate-chip donate-chip--brand donate-chip--gpay" title="Google Pay">
+                <img class="chip-pay-logo chip-pay-logo--gpay" src="../icons/google-pay.svg" width="46" height="18" alt="Google Pay" />
+              </span>
+              <span class="donate-chip donate-chip--brand donate-chip--paypal" title="PayPal">
+                <img class="chip-pay-logo chip-pay-logo--paypal" src="../icons/paypal.svg" width="18" height="22" alt="PayPal" />
+              </span>
+            </div>
+
+            <div class="donate-preview">
+              <div class="dp-list" aria-hidden="true">
+                <div class="dp-row"><span class="dp-tag tag-tracker">TRACKER</span><span class="dp-url">doubleclick.net</span><span class="dp-cnt">128</span></div>
+                <div class="dp-row"><span class="dp-tag tag-ad">AD</span><span class="dp-url">googlesyndication.com</span><span class="dp-cnt">94</span></div>
+                <div class="dp-row"><span class="dp-tag tag-ad">AD</span><span class="dp-url">ads.twitch.tv</span><span class="dp-cnt">61</span></div>
+                <div class="dp-row dp-add"><span class="dp-tag tag-custom" data-i18n="donate.preview.custom">EIGENE</span><span class="dp-url">deine-werbe-url.com</span><span class="dp-cnt">+</span></div>
+              </div>
+              <div class="dp-lock">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                <div class="dp-lock-txt">
+                  <b data-i18n="donate.preview.lockTitle">Detail-Ansicht &amp; eigene Filter</b>
+                  <span data-i18n="donate.preview.lockSub">Genau sehen, was geblockt wird – plus eigene URLs.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="donate-amount-field">
+              <label class="donate-amount-label" for="donateAmount" data-i18n="donate.amountLabel">Your amount (EUR)</label>
+              <div class="donate-amount-row">
+                <span class="donate-amount-currency" aria-hidden="true">€</span>
+                <input type="number" id="donateAmount" class="donate-amount-input" min="1" step="0.01" inputmode="decimal" data-i18n-placeholder="donate.amountPlaceholder" placeholder="e.g. 5" autocomplete="off" required />
+              </div>
+              <div class="donate-amount-presets" data-i18n-aria="donate.presetsAria" aria-label="Quick amounts">
+                <button type="button" class="donate-amount-preset" data-amount="3">€3</button>
+                <button type="button" class="donate-amount-preset" data-amount="5">€5</button>
+                <button type="button" class="donate-amount-preset" data-amount="10">€10</button>
+                <button type="button" class="donate-amount-preset" data-amount="20">€20</button>
+              </div>
+            </div>
+
+            <button type="button" class="btn-donate is-disabled" id="donateBtn" aria-disabled="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              <span class="donate-btn-label" data-i18n="donate.enterAmount">Enter your amount</span>
+            </button>
+            <a class="btn-donate-alt" href="https://streamblock.online/support" target="_blank" rel="noopener" data-i18n="donate.cryptoLink">Crypto &amp; info</a>
+            <div class="donate-foot" data-i18n="donate.foot">Voluntary donations with no goods or services in return — thank you!</div>
+          </div>
+
+          <div class="more-block feedback-block">
+            <button type="button" id="feedbackBtn" class="btn-feedback" data-i18n-title="more.feedback.titleAttr" title="Open feedback form">
+              <span class="btn-feedback-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 14h5"/></svg>
+              </span>
+              <span class="btn-feedback-text">
+                <span class="btn-feedback-label" data-i18n="more.feedback.btn">Send feedback</span>
+                <span class="btn-feedback-sub" data-i18n="more.feedback.desc">Report a bug or suggest a feature.</span>
+              </span>
+              <svg class="btn-feedback-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <button id="resetStats" class="btn btn-ghost btn-sm" type="button">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 3V1L5 4l3 3V5a3 3 0 11-3 3H3a5 5 0 105-5z"/></svg>
+        <span data-i18n="footer.reset">Zurücksetzen</span>
+      </button>
+      <span class="version">v2.4.14</span>
+    </footer>
+
+    <div class="welcome-overlay" id="welcomeOverlay" hidden>
+      <div class="welcome-panel glass" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+        <div class="welcome-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3 L19.5 6 V12.3 C19.5 16.5 16 19.4 12 21 C8 19.4 4.5 16.5 4.5 12.3 V6 Z" fill="#fff"/>
+            <path d="M8.6 12 l2.5 2.5 l4.5-4.8" fill="none" stroke="#6D28D9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 id="welcomeTitle" data-i18n="welcome.title">Welcome to Streamblock</h2>
+        <p class="welcome-message" data-i18n="welcome.message">Streamblock is a pay-what-you-like software. You can use it for free, forever. 😊</p>
+        <label class="welcome-label" for="welcomeLanguage" data-i18n="welcome.languageLabel">Choose your language</label>
+        <select id="welcomeLanguage" class="welcome-select">
+          <option value="en" selected>English</option>
+          <option value="de">Deutsch</option>
+        </select>
+        <button type="button" class="welcome-btn" id="welcomeContinue" data-i18n="welcome.continue">Get started</button>
+        <button type="button" class="welcome-donate" id="welcomeDonate" data-i18n-title="welcome.donateTitle" title="Go to donation page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.3 2 5 5.2 5c2 0 3.4 1.1 4.1 2.3l.7 1 .7-1C11.5 6.1 12.8 5 14.8 5 18 5 19.6 8.3 22 11.7 19.5 16.4 12 21 12 21z"/></svg>
+          <span data-i18n="welcome.donate">Support the project</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="settingsOverlay" hidden>
+      <button type="button" class="settings-backdrop" id="settingsBackdrop" aria-label="Close"></button>
+      <div class="settings-panel glass" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="settings-head">
+          <h2 id="settingsTitle" data-i18n="settings.title">Einstellungen</h2>
+          <button type="button" class="settings-close" id="closeSettings" data-i18n-title="settings.close" title="Schließen" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="settings-body">
+          <label class="settings-label" for="languageSelect" data-i18n="settings.language">Sprache</label>
+          <select id="languageSelect" class="settings-select">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+          </select>
+          <p class="settings-hint" data-i18n="settings.languageHint">Gilt für Popup und Detail-Ansicht.</p>
+
+          <div class="settings-divider" aria-hidden="true"></div>
+
+          <div class="settings-row">
+            <div class="settings-row-text">
+              <span class="settings-row-title" data-i18n="more.telemetry.name">Anonyme Statistik</span>
+              <span class="settings-row-desc" data-i18n="more.telemetry.desc">Versionszähler &amp; Block-Summe – keine URLs, keine Identität.</span>
+            </div>
+            <label class="toggle toggle-sm" title="Telemetry">
+              <input type="checkbox" id="telemetryToggle" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Force-Update: nicht schließbarer Sperrbildschirm bei deaktivierter Version -->
+  <div class="update-gate" id="updateGate" hidden>
+    <div class="update-gate-inner">
+      <span class="update-gate-icon" aria-hidden="true">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-3.6-7.2"/><polyline points="21 4 21 10 15 10"/>
+        </svg>
+      </span>
+      <span class="update-gate-badge" id="updateGateBadge" data-i18n="update.badge">Update erforderlich</span>
+      <h2 class="update-gate-title" id="updateGateTitle" data-i18n="update.title">Diese Version wird nicht mehr unterstützt</h2>
+      <p class="update-gate-body" id="updateGateBody"></p>
+      <p class="update-gate-msg" id="updateGateMsg" hidden></p>
+      <button type="button" class="update-gate-btn" id="updateGateBtn" data-i18n="update.btn">Jetzt aktualisieren</button>
+      <span class="update-gate-foot" id="updateGateFoot" data-i18n="update.protectionOff">Schutz pausiert</span>
+    </div>
+  </div>
+
+  <script src="../i18n.js"></script>
+  <script src="popup.js"></script>
+  <script src="donate-ui.js"></script>
+</body>
+</html>
