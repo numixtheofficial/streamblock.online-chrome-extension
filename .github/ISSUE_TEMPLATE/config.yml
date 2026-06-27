@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Frage / Support
+    url: https://streamblock.online/support
+    about: Allgemeine Fragen und Support. Sicherheitslücken bitte NICHT öffentlich melden — siehe SECURITY.md.

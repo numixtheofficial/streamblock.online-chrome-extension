@@ -1,0 +1,77 @@
+name: "🐞 Bug melden"
+description: "Werbung wird angezeigt, Blackscreen oder anderes Fehlverhalten"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deinen Report! Bitte zuerst prüfen:
+        **Extension neu laden (↺) und den Tab neu laden (F5)** — Twitch ändert
+        seine Technik oft, ein Reload behebt vieles.
+  - type: dropdown
+    id: site
+    attributes:
+      label: Wo tritt das Problem auf?
+      options:
+        - Twitch
+        - YouTube
+        - Andere Website (Cosmetic/Network)
+        - Popup / Einstellungen
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Extension-Version
+      description: "Siehe chrome://extensions/ oder das Popup."
+      placeholder: "2.4.13"
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Brave
+        - Opera
+        - Firefox
+        - Andere (im Text angeben)
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Was passiert?
+      description: Was hast du erwartet, was ist stattdessen passiert?
+      placeholder: "Bei Stream X läuft eine 30s-Werbung statt eines Quali-Drops …"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      placeholder: |
+        1. Stream X öffnen
+        2. Auf Werbung warten
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Konsolen-Ausgabe (optional)
+      description: "DevTools (F12) → Console. Relevante Fehler/Logs hier einfügen."
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Vorab geprüft
+      options:
+        - label: Ich nutze die aktuellste Version.
+          required: true
+        - label: Ich habe die Extension neu geladen (↺) und den Tab neu geladen (F5).
+          required: true
+        - label: Ein kurzer Quali-Drop während Twitch-Werbung ist bekannt (kein Bug).
+          required: true

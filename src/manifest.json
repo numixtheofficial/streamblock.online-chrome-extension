@@ -1,0 +1,88 @@
+{
+  "manifest_version": 3,
+  "name": "Streamblock",
+  "version": "2.4.14",
+  "description": "Streamblock blockiert Twitch- & YouTube-Werbung plus Network-Blocking, DOM- & Cosmetic-Filterung auf allen Seiten",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "ui/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "Streamblock"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.twitch.tv/*",
+    "*://*.twitchsvc.net/*",
+    "*://*.jtvnw.net/*",
+    "*://usher.twitchapps.com/*",
+    "*://imasdk.googleapis.com/*",
+    "*://pubads.g.doubleclick.net/*",
+    "*://securepubads.g.doubleclick.net/*",
+    "*://video-edge-*.abs.hls.twitchsvc.net/*",
+    "https://streamblock.online/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.twitch.tv/*"],
+      "js": ["inject.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://*.twitch.tv/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": false
+    },
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["youtube.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["yt-bridge.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": false
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["cosmetic.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": true
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "block_ads",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}
