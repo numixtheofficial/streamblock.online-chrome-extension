@@ -265,6 +265,7 @@
   let contentDuration = 0;   // length of the REAL video (only after stable playback)
   let lastDur = -1;          // last seen duration (for the stability check)
   let stableTicks = 0;       // how many ticks the duration was stable without an ad
+  let adTicks = 0;           // consecutive ticks an ad has been showing (seek guard)
 
   const SKIP_SELECTORS = [
     '.ytp-ad-skip-button',
@@ -444,6 +445,7 @@
     }
 
     if (adShowing && video) {
+      adTicks++;
       // Rising edge: save the real video's state + count the ad.
       if (!adWasActive) {
         adWasActive = true;
@@ -458,14 +460,18 @@
       try {
         video.muted = true;
         if (video.playbackRate !== 16) video.playbackRate = 16;
-        // Only seek to the end if ALL conditions are met:
-        const safeToSeek = contentDuration > 0 && isFinite(d) && d > 0 &&
+        // Only seek to the end if ALL conditions are met. The adTicks>=2 guard
+        // makes sure a single false 'ad-showing' flash at video start can never
+        // seek the REAL video to its end (which looked like an instant pause).
+        const safeToSeek = adTicks >= 2 && contentDuration > 0 &&
+                           isFinite(d) && d > 0 &&
                            Math.abs(d - contentDuration) > 1;
         if (safeToSeek) {
           video.currentTime = d;
         }
       } catch (e) {}
     } else if (!adShowing) {
+      adTicks = 0;
       // Falling edge: restore the original state after the ad.
       if (adWasActive && video) {
         try {
@@ -512,6 +518,20 @@
     if (playerObserver) { clearInterval(playerWait); return; }
     attachPlayerObserver();
   }, 500);
+
+  // Reset the per-video state on SPA navigation, so a stale contentDuration from
+  // the previous video can never trigger a seek on the freshly started one.
+  function resetAdState() {
+    contentDuration = 0;
+    lastDur = -1;
+    stableTicks = 0;
+    adTicks = 0;
+    adWasActive = false;
+    pendingHideAt = 0;
+    try { hideShield(); } catch (e) {}
+  }
+  try { document.addEventListener('yt-navigate-finish', resetAdState, true); } catch (e) {}
+  try { document.addEventListener('yt-navigate-start', resetAdState, true); } catch (e) {}
 
   // 3. Hide display/feed ads via CSS
   const AD_CSS = `
