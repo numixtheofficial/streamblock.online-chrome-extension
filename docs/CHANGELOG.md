@@ -1,69 +1,61 @@
 # Changelog
 
-Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
+All notable changes to this project are documented here.
 
-Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
-und das Projekt folgt grob [Semantic Versioning](https://semver.org/lang/de/).
-
-## [Unreleased]
-
-### Geändert
-- **Repository umstrukturiert**: Der Extension-Code liegt jetzt in `src/`
-  (Popup/Detail-Ansicht in `src/ui/`), Entwickler-Tools in `scripts/`, Zusatz-
-  Dokumentation in `docs/`. Beim Laden als entpackte Erweiterung den Ordner
-  `src/` auswählen. Keine funktionalen Änderungen an der Extension selbst.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project loosely follows [Semantic Versioning](https://semver.org/).
 
 ## [2.4.15]
 
-### Behoben
-- **Telemetrie: doppelt gezählte Installationen.** Beim allerersten Start konnten
-  durch eine Race-Condition kurzzeitig zwei zufällige Install-IDs erzeugt werden,
-  wodurch eine Installation im Dashboard doppelt zählte. Die ID-Erzeugung wird
-  jetzt geteilt (eine gemerkte Promise), sodass parallele Aufrufe dieselbe ID
-  erhalten. Rein interne Statistik-Korrektur — keine Auswirkung auf das Blocken.
+### Fixed
+- **Telemetry: installations counted twice.** On the very first start a race
+  condition could briefly generate two random install IDs, which made a single
+  installation count twice in the dashboard. ID generation is now shared (a
+  memoized promise) so concurrent calls receive the same ID. Purely an internal
+  stats correction — no effect on ad blocking.
 
 ## [2.4.14]
 
-### Hinzugefügt
-- **YouTube Anti-Adblock-Abwehr**: Das harte Enforcement-Popup ("Werbeblocker
-  erkannt"), das das Video pausiert, wird jetzt sofort entfernt (CSS + aktives
-  Aufräumen) und die Wiedergabe automatisch fortgesetzt. Zusätzlich wird der
-  weiche Hinweis ("Experiencing interruptions?" / Toast unten links), der die
-  Wiedergabe künstlich verzögert, per Text erkannt und weggeräumt.
-- **YouTube Anti-Adblock auf Daten-Ebene unterbunden**: Der Auslöser des Popups
-  (`enforcementMessageViewModel` & Co.) wird jetzt schon aus den Netzwerk-/Seiten-
-  Daten (`ytInitialData`, Player-/Next-Antworten) geschnitten — das Popup entsteht
-  gar nicht erst, die daran hängende Verzögerung entfällt. Zusätzlich wird ein
-  harter `playabilityStatus`-Block mit Adblock-Bezug auf `OK` zurückgesetzt
-  (streng text-gated, echte Fehler wie Geo-Sperre bleiben unberührt).
+### Added
+- **YouTube anti-adblock defense**: the hard enforcement popup ("ad blocker
+  detected") that pauses the video is now removed immediately (CSS + active
+  cleanup) and playback resumes automatically. The soft notice
+  ("Experiencing interruptions?" / toast at the bottom left) that artificially
+  delays playback is also detected by text and cleared.
+- **YouTube anti-adblock blocked at the data level**: the trigger of the popup
+  (`enforcementMessageViewModel` & co.) is now cut out of the network/page data
+  (`ytInitialData`, player/next responses) — the popup is never built in the
+  first place and the delay attached to it is gone. In addition, a hard
+  `playabilityStatus` block related to adblocking is reset to `OK` (strictly
+  text-gated; genuine errors such as geo blocks are left untouched).
 
-### Geändert
-- **YouTube schnellerer Videostart**: Der `fetch`-Hook puffert nur noch
-  Player-Antworten vollständig statt jeder InnerTube-Antwort. Feed-/Browse-/
-  Search-Antworten verzögern den kritischen Pfad nicht mehr (werden weiterhin
-  über die `JSON.parse`-/`Response.json`-/`XHR`-Hooks gesäubert).
+### Changed
+- **Faster YouTube video start**: the `fetch` hook now fully buffers only
+  player responses instead of every InnerTube response. Feed/browse/search
+  responses no longer delay the critical path (they are still cleaned via the
+  `JSON.parse` / `Response.json` / `XHR` hooks).
 
 ## [2.4.13]
 
-### Enthalten
-- **Stream-Swap** für Twitch (Worker-Hook + werbefreier Backup-Stream), inkl.
-  Ad-Segment-Stripping und `player_type`-Spoof.
-- **YouTube Ad-Block** (Ad-Stripping aus der Player-Antwort + Auto-Skip).
-- **Network-Blocking** mit ~336 Regeln (generiert aus `build-rules.js`).
-- **Cosmetic-Filter** auf allen Webseiten (im Popup abschaltbar).
-- **Popup** mit Live-Statistik, Methoden-Schaltern und Mehrsprachigkeit (DE/EN).
-- **Detail-Ansicht** mit Live-Block-Log.
-- Anonyme, aggregierte **Telemetrie** (opt-out) — nur Install-ID, Version,
-  Browser-Typ und Block-Summe; keine URLs oder personenbezogenen Daten.
+### Included
+- **Stream-Swap** for Twitch (worker hook + ad-free backup stream), including
+  ad-segment stripping and `player_type` spoofing.
+- **YouTube ad block** (ad stripping from the player response + auto-skip).
+- **Network blocking** with ~336 rules (generated from `build-rules.js`).
+- **Cosmetic filter** on all websites (can be turned off in the popup).
+- **Popup** with live stats, per-method toggles and multilingual UI (DE/EN).
+- **Detail view** with a live block log.
+- Anonymous, aggregated **telemetry** (opt-out) — only install ID, version,
+  browser type and total block count; no URLs or personal data.
 
 ---
 
 <!--
-Pflege-Hinweis: Beim Release einer neuen Version oben einen Abschnitt
-[x.y.z] - JJJJ-MM-TT mit den Kategorien Hinzugefügt / Geändert / Behoben /
-Entfernt anlegen und die Version in manifest.json gleichziehen.
+Maintenance note: when releasing a new version, add a section
+[x.y.z] - YYYY-MM-DD at the top with the categories Added / Changed / Fixed /
+Removed, and bump the version in manifest.json to match.
 -->
 
-[Unreleased]: ../../compare/v2.4.14...HEAD
+[2.4.15]: ../../releases/tag/v2.4.15
 [2.4.14]: ../../releases/tag/v2.4.14
 [2.4.13]: ../../releases/tag/v2.4.13
