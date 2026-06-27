@@ -8,6 +8,12 @@ and this project loosely follows [Semantic Versioning](https://semver.org/).
 ## [2.4.15]
 
 ### Fixed
+- **YouTube: videos no longer pause/jump to the end on start.** A stale content
+  duration carried over from the previous video (SPA navigation) combined with a
+  brief false `ad-showing` flash could seek the real video to its end, which
+  looked like an instant pause. The per-video ad state is now reset on
+  navigation, and the fast-forward only runs once an ad is confirmed for two
+  ticks — so a real video can never be seeked to its end.
 - **Telemetry: installations counted twice.** On the very first start a race
   condition could briefly generate two random install IDs, which made a single
   installation count twice in the dashboard. ID generation is now shared (a
