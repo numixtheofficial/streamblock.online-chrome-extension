@@ -37,13 +37,22 @@ async function hmacHex(secret, message) {
   return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function getInstallId() {
-  const { installId } = await chrome.storage.local.get(['installId']);
-  if (installId) return installId;
-  const id = (crypto.randomUUID && crypto.randomUUID())
-    || ([...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join(''));
-  await chrome.storage.local.set({ installId: id });
-  return id;
+// Memoized so several telemetry calls firing at once on first install share ONE
+// id instead of each generating a different one (which would make the admin
+// count a single install twice).
+let _installIdPromise = null;
+function getInstallId() {
+  if (!_installIdPromise) {
+    _installIdPromise = (async () => {
+      const { installId } = await chrome.storage.local.get(['installId']);
+      if (installId) return installId;
+      const id = (crypto.randomUUID && crypto.randomUUID())
+        || ([...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join(''));
+      await chrome.storage.local.set({ installId: id });
+      return id;
+    })().catch((e) => { _installIdPromise = null; throw e; });
+  }
+  return _installIdPromise;
 }
 
 /** True if at least one Twitch/YouTube tab is open (not discarded). */

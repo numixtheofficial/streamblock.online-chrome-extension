@@ -13,6 +13,15 @@ und das Projekt folgt grob [Semantic Versioning](https://semver.org/lang/de/).
   Dokumentation in `docs/`. Beim Laden als entpackte Erweiterung den Ordner
   `src/` auswählen. Keine funktionalen Änderungen an der Extension selbst.
 
+## [2.4.15]
+
+### Behoben
+- **Telemetrie: doppelt gezählte Installationen.** Beim allerersten Start konnten
+  durch eine Race-Condition kurzzeitig zwei zufällige Install-IDs erzeugt werden,
+  wodurch eine Installation im Dashboard doppelt zählte. Die ID-Erzeugung wird
+  jetzt geteilt (eine gemerkte Promise), sodass parallele Aufrufe dieselbe ID
+  erhalten. Rein interne Statistik-Korrektur — keine Auswirkung auf das Blocken.
+
 ## [2.4.14]
 
 ### Hinzugefügt
