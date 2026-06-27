@@ -1,30 +1,30 @@
-name: "💡 Feature vorschlagen"
-description: "Eine Idee oder Verbesserung vorschlagen"
+name: "💡 Suggest a feature"
+description: "Suggest an idea or improvement"
 labels: ["enhancement"]
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Welches Problem löst das Feature?
-      placeholder: "Mich nervt, dass …"
+      label: What problem does the feature solve?
+      placeholder: "It bothers me that …"
     validations:
       required: true
   - type: textarea
     id: solution
     attributes:
-      label: Gewünschte Lösung
-      placeholder: "Es wäre gut, wenn …"
+      label: Desired solution
+      placeholder: "It would be good if …"
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternativen (optional)
-      placeholder: "Ich habe auch … in Betracht gezogen."
+      label: Alternatives (optional)
+      placeholder: "I also considered …"
   - type: checkboxes
     id: checks
     attributes:
-      label: Vorab geprüft
+      label: Checked beforehand
       options:
-        - label: Es gibt noch kein offenes Issue für diese Idee.
+        - label: There is no open issue for this idea yet.
           required: true

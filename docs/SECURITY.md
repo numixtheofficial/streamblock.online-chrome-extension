@@ -1,38 +1,38 @@
 # Security Policy
 
-## Unterstützte Versionen
+## Supported versions
 
-Es wird jeweils nur die **aktuellste** Version gepflegt. Bitte aktualisiere auf
-die neueste Version, bevor du ein Problem meldest.
+Only the **latest** version is maintained. Please update to the newest version
+before reporting an issue.
 
-| Version | Unterstützt |
-|--------:|:-----------:|
+| Version | Supported |
+|--------:|:---------:|
 | 2.4.x   | ✅ |
 | < 2.4   | ❌ |
 
-## Eine Sicherheitslücke melden
+## Reporting a vulnerability
 
-Bitte melde Sicherheitslücken **nicht** über öffentliche GitHub-Issues.
+Please do **not** report security issues via public GitHub issues.
 
-Nutze stattdessen die **[GitHub Security Advisories](../../security/advisories/new)**
-(„Report a vulnerability") oder kontaktiere die Maintainer privat. Bitte gib an:
+Instead use the **[GitHub Security Advisories](../../security/advisories/new)**
+("Report a vulnerability") or contact the maintainers privately. Please include:
 
-- betroffene Version &amp; Browser,
-- eine Beschreibung des Problems und der möglichen Auswirkung,
-- Schritte zur Reproduktion (falls vorhanden).
+- affected version & browser,
+- a description of the issue and its potential impact,
+- steps to reproduce (if available).
 
-Du erhältst in der Regel innerhalb weniger Tage eine Rückmeldung.
+You'll usually get a response within a few days.
 
-## Sicherheits-Hinweise zum Projekt
+## Security notes about the project
 
-- **Berechtigungen:** Die Extension benötigt Zugriff auf *alle Websites*,
-  ausschließlich für den **Cosmetic-Filter**. Dieser ist im Popup jederzeit
-  abschaltbar. Stream-Logik läuft nur auf `twitch.tv` und `youtube.com`.
-- **Telemetrie:** Sendet ausschließlich anonyme, aggregierte Werte (zufällige
-  Install-ID, Version, Browser-Typ, Block-Summe). Keine URLs, keine besuchten
-  Seiten, keine personenbezogenen Daten. Jederzeit per **Opt-out** im Popup
-  abschaltbar. Das mitgelieferte HMAC-Secret ist kein echtes Geheimnis (es steckt
-  zwangsläufig in jeder Extension); Schutz gegen Missbrauch bieten serverseitiges
-  Rate-Limit und ein Zeitfenster.
-- **Eigenes Backend:** Wer einen eigenen Telemetrie-Server betreibt, ersetzt
-  Endpoint &amp; Secret in `telemetry.js` durch eigene Werte.
+- **Permissions:** the extension needs access to *all websites*, solely for the
+  **cosmetic filter**. It can be turned off in the popup at any time. Stream
+  logic only runs on `twitch.tv` and `youtube.com`.
+- **Telemetry:** sends only anonymous, aggregated values (random install ID,
+  version, browser type, total block count). No URLs, no visited pages, no
+  personal data. Can be turned off at any time via **opt-out** in the popup.
+  The bundled HMAC secret is not a real secret (it inevitably ships in every
+  extension); protection against abuse comes from a server-side rate limit and
+  a time window.
+- **Own backend:** if you run your own telemetry server, replace the endpoint &
+  secret in `telemetry.js` with your own values.

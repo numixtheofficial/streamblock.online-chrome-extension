@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: JavaScript-Syntax prüfen (node --check)
+      - name: Check JavaScript syntax (node --check)
         run: |
           set -e
           for f in $(find . -name '*.js' -not -path './node_modules/*'); do
@@ -24,7 +24,7 @@ jobs:
             node --check "$f"
           done
 
-      - name: JSON validieren (manifest.json, rules.json)
+      - name: Validate JSON (manifest.json, rules.json)
         run: |
           set -e
           for f in src/manifest.json src/rules.json; do
@@ -32,11 +32,11 @@ jobs:
             node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))"
           done
 
-      - name: rules.json ist aktuell (build-rules.js)
+      - name: rules.json is up to date (build-rules.js)
         run: |
           node scripts/build-rules.js
           if ! git diff --quiet -- src/rules.json; then
-            echo "::error::rules.json ist nicht aktuell. Bitte 'node scripts/build-rules.js' ausführen und committen."
+            echo "::error::rules.json is out of date. Please run 'node scripts/build-rules.js' and commit."
             git --no-pager diff --stat -- src/rules.json
             exit 1
           fi

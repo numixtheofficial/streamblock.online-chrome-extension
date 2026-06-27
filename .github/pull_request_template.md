@@ -1,25 +1,25 @@
-<!-- Danke für deinen Beitrag! Bitte kurz ausfüllen. -->
+<!-- Thanks for your contribution! Please fill in briefly. -->
 
-## Beschreibung
+## Description
 
-<!-- Was ändert dieser PR und warum? -->
+<!-- What does this PR change and why? -->
 
-## Art der Änderung
+## Type of change
 
-- [ ] 🐞 Bugfix
-- [ ] ✨ Neues Feature
-- [ ] 🧹 Refactor / Aufräumen
-- [ ] 📝 Doku
-- [ ] 🛡️ Block-Liste (`build-rules.js`)
+- [ ] 🐞 Bug fix
+- [ ] ✨ New feature
+- [ ] 🧹 Refactor / cleanup
+- [ ] 📝 Docs
+- [ ] 🛡️ Block list (`build-rules.js`)
 
-## Checkliste
+## Checklist
 
-- [ ] `node --check` läuft fehlerfrei für geänderte `.js`-Dateien
-- [ ] `manifest.json` / `rules.json` sind gültiges JSON
-- [ ] In Chromium getestet (idealerweise auch Firefox)
-- [ ] Keine Geheimnisse / persönlichen Daten / Build-Artefakte committet
-- [ ] Bei neuen Domains: `build-rules.js` ergänzt und `node build-rules.js` ausgeführt
+- [ ] `node --check` passes for changed `.js` files
+- [ ] `manifest.json` / `rules.json` are valid JSON
+- [ ] Tested in Chromium (ideally Firefox too)
+- [ ] No secrets / personal data / build artifacts committed
+- [ ] For new domains: updated `build-rules.js` and ran `node build-rules.js`
 
-## Verwandte Issues
+## Related issues
 
-<!-- z. B. Closes #12 -->
+<!-- e.g. Closes #12 -->

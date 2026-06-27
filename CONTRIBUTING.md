@@ -1,59 +1,58 @@
 # Contributing
 
-Danke, dass du zu **Streamblock** beitragen möchtest! 💜
+Thanks for wanting to contribute to **Streamblock**! 💜
 
-## Entwicklungs-Setup
+## Development setup
 
-Es gibt **keinen Build-Schritt** — die Extension wird direkt aus dem Quellordner
-geladen:
+There is **no build step** — the extension is loaded directly from the source
+folder:
 
-1. `chrome://extensions/` öffnen → **Entwicklermodus** an
-2. **„Entpackte Erweiterung laden"** → diesen Ordner wählen
-3. Nach Änderungen: in `chrome://extensions/` auf **↺** klicken, dann den
-   Twitch-/YouTube-Tab neu laden (F5)
+1. Open `chrome://extensions/` → enable **Developer mode**
+2. **"Load unpacked"** → select the `src/` folder
+3. After changes: click **↺** in `chrome://extensions/`, then reload the
+   Twitch/YouTube tab (F5)
 
-> Tipp: Die drei Twitch-Methoden und der YouTube-Ad-Block greifen in Hooks, die
-> nur beim Seitenladen gesetzt werden — nach Code-Änderungen also immer den Tab
-> neu laden.
+> Tip: the three Twitch methods and the YouTube ad block hook into code that
+> only runs on page load — so always reload the tab after code changes.
 
-## Codestil
+## Code style
 
-- Vanilla JavaScript (ES2020+), keine Frameworks, keine Build-Tools.
-- 2 Spaces Einrückung, Semikolons, einfache Anführungszeichen (siehe `.editorconfig`).
-- Schreibe so, wie der umgebende Code aussieht (Namensgebung, Kommentar-Dichte).
-- Keine neuen Abhängigkeiten ohne triftigen Grund.
+- Vanilla JavaScript (ES2020+), no frameworks, no build tools.
+- 2-space indentation, semicolons, single quotes (see `.editorconfig`).
+- Write code that matches the surrounding code (naming, comment density).
+- No new dependencies without a good reason.
 
-## Vor dem Pull Request
+## Before the pull request
 
-- [ ] `node --check` läuft fehlerfrei für geänderte `.js`-Dateien.
-- [ ] `manifest.json` und `rules.json` sind gültiges JSON.
-- [ ] In Chromium **und** (wenn möglich) Firefox getestet.
-- [ ] Keine Geheimnisse, keine persönlichen Daten, keine `*.zip`/`*.crx` committet.
-- [ ] Bei neuen Block-Domains: in `build-rules.js` ergänzt und `node build-rules.js`
-      ausgeführt (nicht `rules.json` von Hand editieren).
+- [ ] `node --check` passes for changed `.js` files.
+- [ ] `manifest.json` and `rules.json` are valid JSON.
+- [ ] Tested in Chromium **and** (if possible) Firefox.
+- [ ] No secrets, no personal data, no `*.zip`/`*.crx` committed.
+- [ ] For new block domains: added to `build-rules.js` and ran
+      `node scripts/build-rules.js` (don't edit `rules.json` by hand).
 
-## Block-Listen erweitern
+## Extending the block lists
 
-`rules.json` wird **generiert**. Neue Domains immer in `build-rules.js` eintragen
-und neu generieren:
+`rules.json` is **generated**. Always add new domains in `build-rules.js` and
+regenerate:
 
 ```bash
-node build-rules.js
+node scripts/build-rules.js
 ```
 
-Twitch-Playback-Domains (`ttvnw.net`, `jtvnw.net`, …) niemals blocken — dafür
-gibt es ein Sicherheitsnetz im Generator.
+Never block Twitch playback domains (`ttvnw.net`, `jtvnw.net`, …) — there is a
+safety net in the generator for that.
 
 ## Commits
 
-Kurze, aussagekräftige Commit-Messages im Imperativ, z. B.:
+Short, meaningful commit messages in the imperative, e.g.:
 
 ```
-fix: Stream-Swap nach Twitch-Worker-Änderung reparieren
-feat: Cosmetic-Filter für Beispiel.de ergänzen
+fix: repair Stream-Swap after Twitch worker change
+feat: add cosmetic filter for example.com
 ```
 
-## Hinweis
+## Note
 
-Streamblock ist ein Bildungsprojekt. Beiträge, die das CDN (`googlevideo.com`,
-`ttvnw.net`) blocken oder die Wiedergabe brechen, werden nicht akzeptiert.
+Streamblock is an educational project. Contributions that block the CDN
+(`googlevideo.com`, `ttvnw.net`) or break playback will not be accepted.
