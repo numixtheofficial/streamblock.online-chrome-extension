@@ -11,7 +11,7 @@ import { initTelemetry } from './telemetry.js';
 import { initUpdateCheck, getForceState } from './update-check.js';
 
 const NETWORK_RULESET_ID = 'block_ads';
-const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true };
+const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true, youtubeNet: false };
 // Time-saved estimate:
 const VIDEO_AD_SECONDS = 22;     // avg length of a skipped video ad
 const NET_REQUEST_SECONDS = 0.12; // avg load time saved per blocked request

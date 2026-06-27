@@ -14,7 +14,8 @@
   const METHODS_KEY = '__tabp_methods';
   const DEFAULT_METHODS = {
     streamSwap: true, strip: true, spoof: true,
-    network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true
+    network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true,
+    youtubeNet: false
   };
 
   function mirror(enabled, methods) {

@@ -15,6 +15,7 @@
  * __tabp_disabled = '1'      -> fully off
  * __tabp_methods.youtube     -> this method on/off
  * __tabp_methods.youtubeDai  -> SSAI strip (remove daiConfig) on/off (beta)
+ * __tabp_methods.youtubeNet  -> network block of ad/tracking requests (beta)
  */
 
 (function () {
@@ -32,6 +33,13 @@
 
   // SSAI strip (beta): remove YouTube's "Dynamic Ad Insertion" config.
   const STRIP_DAI = METHODS.youtubeDai !== false;
+
+  // Network block (beta, off by default): drop YouTube's ad-serving and
+  // ad-tracking requests outright. Deliberately conservative — it only matches
+  // ad/telemetry endpoints and NEVER the video CDN (googlevideo.com), so it
+  // cannot break playback.
+  const STRIP_NET = METHODS.youtubeNet === true;
+  const AD_URL_RE = /(?:\/pagead\/|\/ptracking|\/api\/stats\/ads|\/api\/stats\/atr|\/pcs\/activeview|doubleclick\.net|googlesyndication\.com|googleadservices\.com)/i;
 
   const TAG = '[Streamblock/YT]';
 
@@ -54,6 +62,13 @@
 
   // Counts how many ad fields were removed in the last run.
   let _removed = 0;
+  // True when the last prune removed a REAL ad payload (adPlacements/playerAds/
+  // adSlots with content) — lets us count only genuine video ads, not the
+  // routine stripping of empty ad fields from polls/heartbeats.
+  let _realAdHit = false;
+  // Heartbeat responses fire periodically (even while paused) -> never count.
+  const HEARTBEAT_RE = /\/player\/heartbeat/;
+  let _lastAdVideo = '';
 
   function pruneAds(obj, seen) {
     if (!obj || typeof obj !== 'object') return obj;
@@ -66,7 +81,13 @@
         return obj;
       }
       for (const key of AD_KEYS) {
-        if (key in obj) { delete obj[key]; _removed++; }
+        if (key in obj) {
+          const val = obj[key];
+          delete obj[key]; _removed++;
+          if (key === 'adPlacements' || key === 'playerAds' || key === 'adSlots') {
+            if (val && (!Array.isArray(val) || val.length > 0)) _realAdHit = true;
+          }
+        }
       }
       // Anti-Adblock-Renderer entfernen, BEVOR YouTube sie rendert.
       for (const key of ENFORCE_KEYS) {
@@ -106,6 +127,7 @@
     try {
       const obj = _nativeParse(text);
       _removed = 0;
+      _realAdHit = false;
       pruneAds(obj);
       if (_removed === 0) return null;
       return JSON.stringify(obj);
@@ -144,8 +166,22 @@
     } catch (e) {}
   }
 
-  function logPrune(where, url, n) {
-    if (n > 0) notifyAdBlocked('prune:' + (where || 'unknown'));
+  function currentVideoId() {
+    try { return new URLSearchParams(location.search).get('v') || location.pathname; }
+    catch (e) { return location.href; }
+  }
+
+  // Count a blocked video ad ONLY from a real player response that actually
+  // carried an ad payload, at most once per video. This replaces the old
+  // per-prune counting, which inflated the stats by counting every polled
+  // InnerTube response (next/browse/heartbeat) that merely held ad fields.
+  function countPlayerAd(url) {
+    if (url && HEARTBEAT_RE.test(url)) return;
+    if (!_realAdHit) return;
+    const vid = currentVideoId();
+    if (vid && vid === _lastAdVideo) return;
+    _lastAdVideo = vid;
+    notifyAdBlocked('player');
   }
 
   // ytInitialPlayerResponse is set by YouTube as a global variable.
@@ -167,37 +203,42 @@
     });
   } catch (e) {}
 
-  // fetch hook: rewrite player/next responses.
+  // fetch hook: only the network block (beta) short-circuits here. Player
+  // responses are intentionally NOT buffered/rewritten anymore — the old
+  // `await res.clone().text()` held the whole body back before handing it to
+  // YouTube, which caused the black "spinner" delay when navigating between
+  // videos. Ad fields are instead pruned IN PLACE when YouTube reads the
+  // response (Response.json / JSON.parse hooks below), adding ~no latency.
   const origFetch = window.fetch;
-  window.fetch = async function (input, init) {
+  window.fetch = function (input, init) {
     const url = typeof input === 'string' ? input : (input && input.url) || '';
-    const res = await origFetch.apply(this, arguments);
-    try {
-      if (PLAYER_RE.test(url)) {
-        const text = await res.clone().text();
-        if (containsAdMarker(text)) {
-          const body = pruneText(text);
-          if (body !== null) {
-            logPrune('fetch', url, _removed);
-            const headers = new Headers(res.headers);
-            headers.delete('content-encoding');
-            headers.delete('content-length');
-            return new Response(body, { status: res.status, statusText: res.statusText, headers });
-          }
-        }
-      }
-    } catch (e) { /* on error, return the original response */ }
-    return res;
+    if (STRIP_NET && url && AD_URL_RE.test(url)) {
+      return Promise.resolve(new Response('', { status: 200, statusText: 'OK' }));
+    }
+    return origFetch.apply(this, arguments);
   };
+
+  // sendBeacon hook (beta): YouTube fires most ad/telemetry pings via beacons.
+  try {
+    if (navigator.sendBeacon) {
+      const origBeacon = navigator.sendBeacon.bind(navigator);
+      navigator.sendBeacon = function (url, data) {
+        try {
+          if (STRIP_NET && typeof url === 'string' && AD_URL_RE.test(url)) return true;
+        } catch (e) {}
+        return origBeacon(url, data);
+      };
+    }
+  } catch (e) {}
 
   try {
     JSON.parse = function (text, reviver) {
       const data = _nativeParse(text, reviver);
       try {
         if (containsAdMarker(text)) {
-          _removed = 0;
+          // Prune (= block) only; do NOT count here. This hook fires on many
+          // non-player polls and would otherwise inflate the ad counter.
           pruneAds(data);
-          if (_removed > 0) logPrune('JSON.parse', '', _removed);
         }
       } catch (e) {}
       return data;
@@ -207,12 +248,17 @@
   try {
     const _origRespJson = Response.prototype.json;
     Response.prototype.json = function () {
+      const url = (this && this.url) || '';
       return _origRespJson.call(this).then((data) => {
         try {
-          if (looksLikeAdObject(data)) {
-            _removed = 0;
+          // Always prune the real player response (covers playabilityStatus /
+          // enforcement even without an ad payload); otherwise prune anything
+          // that looks like an ad object. Pruning is in place -> no buffering.
+          const isPlayer = PLAYER_RE.test(url) && !HEARTBEAT_RE.test(url);
+          if (isPlayer || looksLikeAdObject(data)) {
+            _realAdHit = false;
             pruneAds(data);
-            if (_removed > 0) logPrune('Response.json', this.url || '', _removed);
+            if (isPlayer) countPlayerAd(url);
           }
         } catch (e) {}
         return data;
@@ -241,14 +287,14 @@
                 if (cleaned !== null) {
                   Object.defineProperty(this, 'responseText', { value: cleaned, configurable: true });
                   Object.defineProperty(this, 'response', { value: cleaned, configurable: true });
-                  logPrune('XHR', this.__sbUrl, _removed);
+                  if (PLAYER_RE.test(this.__sbUrl)) countPlayerAd(this.__sbUrl);
                 }
               }
             } else if (rt === 'json' && this.response && typeof this.response === 'object') {
               // responseType 'json' returns an already-parsed object -> clean it directly.
-              _removed = 0;
+              _realAdHit = false;
               pruneAds(this.response);
-              if (_removed > 0) logPrune('XHR/json', this.__sbUrl, _removed);
+              if (PLAYER_RE.test(this.__sbUrl)) countPlayerAd(this.__sbUrl);
             }
           } catch (e) {}
         });
@@ -266,6 +312,16 @@
   let lastDur = -1;          // last seen duration (for the stability check)
   let stableTicks = 0;       // how many ticks the duration was stable without an ad
   let adTicks = 0;           // consecutive ticks an ad has been showing (seek guard)
+
+  // Remember the last real user interaction, so the pause guard below can tell a
+  // genuine manual pause (always preceded by a click/keypress) apart from an
+  // automatic one (YouTube anti-adblock / a stalled ad request).
+  let userInteractAt = 0;
+  try {
+    const noteInteract = () => { userInteractAt = Date.now(); };
+    document.addEventListener('pointerdown', noteInteract, true);
+    document.addEventListener('keydown', noteInteract, true);
+  } catch (e) {}
 
   const SKIP_SELECTORS = [
     '.ytp-ad-skip-button',
@@ -369,25 +425,21 @@
     'ytd-enforcement-message-renderer'
   ].join(',');
 
-  const ADBLOCK_TEXT_RE = /experiencing interruptions|ad ?blockers? (?:are|aren.?t|violate|not allowed)|using an ad ?blocker|werbeblocker|ad ?blocker.*youtube|allowed on youtube|nicht erlaubt/i;
+  const ADBLOCK_TEXT_RE = /experiencing interruptions|ad ?blockers? (?:are|aren.?t|violate|not allowed)|using an ad ?blocker|werbeblocker|ad ?blocker.*youtube|allowed on youtube|nicht erlaubt|unterbrechungen|inhalte werden/i;
   const TRANSIENT_SELECTORS = [
-    'tp-yt-paper-toast',
     'yt-mealbar-promo-renderer',
     'ytmusic-mealbar-promo-renderer',
-    'ytd-popup-container tp-yt-paper-dialog'
+    'tp-yt-paper-dialog',
+    'ytd-enforcement-message-view-model',
+    'ytd-enforcement-message-renderer'
   ].join(',');
-
-  function resumePlayback() {
-    try {
-      const v = document.querySelector('video.html5-main-video') || document.querySelector('video');
-      if (v && v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-    } catch (e) {}
-  }
 
   function dismissAntiAdblock() {
     let hit = false;
 
-    // (a) Hard enforcement popup — pauses the video + backdrop.
+    // (a) Hard enforcement popup — remove it. The video pausing behind it is
+    // handled by the pause guard (ensurePauseGuard), which re-plays any pause
+    // that wasn't started by the user.
     let enforce = null;
     try { enforce = document.querySelector(ENFORCE_SELECTORS); } catch (e) {}
     if (enforce) {
@@ -403,26 +455,65 @@
       hit = true;
     }
 
-    // (b) Soft notice (toast/mealbar/dialog) — detect by text.
+    // (b) Bottom-left toast ("Experiencing interruptions?"). YouTube reuses ONE
+    // toast node for everything, so we force-hide it ONLY while it shows the
+    // adblock text and restore it for legitimate messages. removeAttribute alone
+    // didn't keep it closed, hence the hard display:none.
+    try {
+      document.querySelectorAll('tp-yt-paper-toast').forEach((n) => {
+        const t = n.textContent || '';
+        const isAd = t.length <= 1200 && ADBLOCK_TEXT_RE.test(t);
+        if (isAd) {
+          try { n.removeAttribute('opened'); } catch (e) {}
+          try { n.style.setProperty('display', 'none', 'important'); } catch (e) {}
+          n.__sbHidden = true;
+        } else if (n.__sbHidden) {
+          try { n.style.removeProperty('display'); } catch (e) {}
+          n.__sbHidden = false;
+        }
+      });
+    } catch (e) {}
+
+    // (c) Other soft notices (mealbar, dialog, enforcement view-model) — detect
+    // by text and remove the whole thing incl. dialog wrapper + backdrop.
     try {
       const nodes = document.querySelectorAll(TRANSIENT_SELECTORS);
       for (const n of nodes) {
         const t = n.textContent || '';
-        if (t.length > 400 || !ADBLOCK_TEXT_RE.test(t)) continue;
-        if (n.tagName === 'TP-YT-PAPER-TOAST') {
-          try { n.removeAttribute('opened'); } catch (e) {}
-        } else {
-          try { n.remove(); } catch (e) {}
-        }
+        if (t.length > 1200 || !ADBLOCK_TEXT_RE.test(t)) continue;
+        let dialog = null;
+        try { dialog = n.closest('tp-yt-paper-dialog'); } catch (e) {}
+        try { (dialog || n).remove(); } catch (e) {}
+        try { document.querySelectorAll('tp-yt-iron-overlay-backdrop').forEach((b) => { try { b.remove(); } catch (e) {} }); } catch (e) {}
+        try {
+          document.documentElement && document.documentElement.style.removeProperty('overflow');
+          document.body && document.body.style.removeProperty('overflow');
+        } catch (e) {}
         hit = true;
       }
     } catch (e) {}
 
-    if (hit) {
-      resumePlayback();
-      notifyAdBlocked('enforcement');
-    }
+    if (hit) notifyAdBlocked('enforcement');
     return hit;
+  }
+
+  // Pause guard: YouTube's anti-adblock (and occasionally a blocked/stalled ad
+  // request) lets the video start and then PAUSES it. We re-play any pause that
+  // wasn't started by the user. A real manual pause always has a click/keypress
+  // right before it, so those are left alone. Attached once per <video>.
+  function ensurePauseGuard(video) {
+    if (!video || video.__sbPauseGuard) return;
+    video.__sbPauseGuard = true;
+    video.addEventListener('pause', function () {
+      try {
+        if (video.ended) return;
+        const p = getActivePlayer();
+        if (p && p.classList.contains('ad-showing')) return; // ads handled by skip
+        if (Date.now() - userInteractAt < 800) return;       // genuine manual pause
+        const pr = video.play();
+        if (pr && pr.catch) pr.catch(() => {});
+      } catch (e) {}
+    });
   }
 
   function handleAds() {
@@ -433,6 +524,7 @@
     const video = document.querySelector('video.html5-main-video') ||
                   document.querySelector('.html5-video-container video') ||
                   document.querySelector('video');
+    if (video) ensurePauseGuard(video);
     const adShowing = player && player.classList.contains('ad-showing');
     const d = video ? video.duration : NaN;
 
@@ -460,12 +552,16 @@
       try {
         video.muted = true;
         if (video.playbackRate !== 16) video.playbackRate = 16;
-        // Only seek to the end if ALL conditions are met. The adTicks>=2 guard
-        // makes sure a single false 'ad-showing' flash at video start can never
-        // seek the REAL video to its end (which looked like an instant pause).
-        const safeToSeek = adTicks >= 2 && contentDuration > 0 &&
-                           isFinite(d) && d > 0 &&
-                           Math.abs(d - contentDuration) > 1;
+        // Skip the ad INSTANTLY by seeking it to its own end, so the real video
+        // starts playing immediately instead of letting a pre-roll run at 16x.
+        //   • Real video length known  -> require the current media to be
+        //     strictly SHORTER (d < content), so the REAL video is never seeked.
+        //   • Fresh load, length unknown -> trust the confirmed ad-showing state
+        //     (adTicks>=2 rules out a single false flash) plus a sane ad-length
+        //     cap, so no normal video can be affected.
+        const AD_MAX = 600; // video ads are virtually always < 10 min
+        const safeToSeek = adTicks >= 2 && isFinite(d) && d > 0 &&
+                           (contentDuration > 0 ? d < contentDuration - 1 : d <= AD_MAX);
         if (safeToSeek) {
           video.currentTime = d;
         }
@@ -518,20 +614,6 @@
     if (playerObserver) { clearInterval(playerWait); return; }
     attachPlayerObserver();
   }, 500);
-
-  // Reset the per-video state on SPA navigation, so a stale contentDuration from
-  // the previous video can never trigger a seek on the freshly started one.
-  function resetAdState() {
-    contentDuration = 0;
-    lastDur = -1;
-    stableTicks = 0;
-    adTicks = 0;
-    adWasActive = false;
-    pendingHideAt = 0;
-    try { hideShield(); } catch (e) {}
-  }
-  try { document.addEventListener('yt-navigate-finish', resetAdState, true); } catch (e) {}
-  try { document.addEventListener('yt-navigate-start', resetAdState, true); } catch (e) {}
 
   // 3. Hide display/feed ads via CSS
   const AD_CSS = `

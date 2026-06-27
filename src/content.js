@@ -15,7 +15,7 @@
   const DISABLED_KEY = '__tabp_disabled';
   const METHODS_KEY = '__tabp_methods';
 
-  const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true };
+  const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true, youtubeNet: false };
 
   // Ad CSS: make banner/display ads invisible
   const AD_CSS = `

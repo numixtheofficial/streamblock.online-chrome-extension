@@ -5,7 +5,7 @@
 (async function () {
   'use strict';
 
-  const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true };
+  const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true, youtubeNet: false };
 
   const ICON_ON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0C3.13 0 0 3.13 0 7s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm-1 10.5L2.5 7l1.41-1.41L6 8.67l4.59-4.58L12 5.5 6 11.5z"/></svg>`;
   const ICON_OFF = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0a7 7 0 100 14A7 7 0 007 0zm2.6 9.6l-.99.99L7 8.98 5.39 10.6l-.99-.99L6.01 8 4.4 6.39l.99-.99L7 7.02l1.61-1.62.99.99L7.99 8l1.61 1.6z"/></svg>`;
@@ -434,6 +434,13 @@
   }
 
   // Init
+  // Show the real extension version (from the manifest) so it never goes stale.
+  try {
+    const verEl = document.getElementById('appVersion');
+    const mv = chrome.runtime.getManifest && chrome.runtime.getManifest().version;
+    if (verEl && mv) verEl.textContent = 'v' + mv;
+  } catch (e) { /* ignore */ }
+
   await SB_I18N.init();
   if (languageSelect) languageSelect.value = SB_I18N.getLanguage();
   SB_I18N.onChange(() => updateStatus(currentEnabled));

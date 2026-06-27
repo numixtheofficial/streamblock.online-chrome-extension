@@ -7,13 +7,34 @@ and this project loosely follows [Semantic Versioning](https://semver.org/).
 
 ## [2.4.15]
 
+### Added
+- **YouTube network block (beta, off by default).** Optional method that drops
+  YouTube's ad-serving and ad-tracking requests directly (pagead, ptracking,
+  stats/ads, doubleclick, …) via the `fetch`/`sendBeacon` hooks. It never
+  touches the video CDN, so it cannot break playback. Toggle in the popup.
+
 ### Fixed
-- **YouTube: videos no longer pause/jump to the end on start.** A stale content
-  duration carried over from the previous video (SPA navigation) combined with a
-  brief false `ad-showing` flash could seek the real video to its end, which
-  looked like an instant pause. The per-video ad state is now reset on
-  navigation, and the fast-forward only runs once an ad is confirmed for two
-  ticks — so a real video can never be seeked to its end.
+- **YouTube: videos no longer pause/jump to the end on start.** A brief false
+  `ad-showing` flash could seek the real video to its end (looked like an instant
+  pause). The fast-forward now only seeks media that is confirmed to be an ad
+  (shorter than the real video, or within a sane ad-length cap on a fresh load).
+- **YouTube: faster start when switching videos.** The player response is no
+  longer fully buffered/rewritten in the `fetch` hook (that caused the black
+  "spinner" delay on navigation). Ad fields are pruned in place when the
+  response is read instead, which adds virtually no latency.
+- **YouTube: pre-rolls are skipped instantly** instead of running at 16× for a
+  moment on a fresh page load.
+- **YouTube: video no longer auto-pauses shortly after start.** A pause guard
+  re-plays any pause that wasn't started by the user (anti-adblock / stalled ad
+  request) while leaving genuine manual pauses untouched.
+- **YouTube: "Experiencing interruptions?" notice removed reliably.** The
+  bottom-left anti-adblock toast is now force-hidden while it shows that text and
+  restored for legitimate toasts; the dialog/mealbar variants are removed too.
+- **Ad counter no longer over-counts.** Blocked YouTube ads are counted only from
+  a real player response that carried an ad payload (at most once per video),
+  not from every polled response — so the counter no longer climbs while a video
+  is paused.
+- **Popup shows the real version** (read from the manifest) so it can't go stale.
 - **Telemetry: installations counted twice.** On the very first start a race
   condition could briefly generate two random install IDs, which made a single
   installation count twice in the dashboard. ID generation is now shared (a

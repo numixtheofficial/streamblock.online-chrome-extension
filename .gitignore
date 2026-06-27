@@ -21,6 +21,9 @@ package-lock.json
 dist/
 web-ext-artifacts/
 
+# Chrome-generated when loading the unpacked extension
+_metadata/
+
 # Secrets (never commit!)
 # If you enable telemetry, keep the endpoint/secret local only.
 *.secret
