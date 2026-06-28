@@ -57,7 +57,9 @@ const AFFILIATE = [
   'avantlink.com', 'avmws.com', 'webgains.com', 'webgains.io', 'digidip.net',
   'clickbank.net', 'affilae.com', 'effiliation.com', 'daisycon.com',
   'financeads.net', 'belboon.com', 'adtraction.com', 'partner-ads.com',
-  'commission-junction.com', 'doubleclick-affiliate.com'
+  'commission-junction.com', 'doubleclick-affiliate.com',
+  // Partner / affiliate tracking (d3ward reachable)
+  'partnerstack.com', 'refersion.com'
 ];
 
 // Ads / ad exchanges / SSPs / DSPs
@@ -77,7 +79,13 @@ const ADS = [
   'mathtag.com', 'bluekai.com', 'agkn.com', 'rlcdn.com', 'tapad.com',
   'ads-twitter.com', 'adsymptotic.com', 'jwpltx.com', 'innovid.com',
   'smartclip.net', 'stickyadstv.com', 'springserve.com',
-  'btloader.com', 'confiant-integrations.net', 'lijit.com'
+  'btloader.com', 'confiant-integrations.net', 'lijit.com',
+  // More ad exchanges / SSPs / video ad servers / ad verification (pure ad-tech)
+  'propellerads.com', '3lift.com', 'kargo.com', 'indexexchange.com', 'smartyads.com',
+  'doubleverify.com', 'insightexpressai.com', 'fwmrm.net', 'tremorhub.com', 'connatix.com',
+  // Header bidding / ad identity / more ad-tech (d3ward reachable)
+  'htlbid.com', 'ad.gt', 'stackadapt.com', 'onetag-sys.com', 'pippio.com',
+  'id5-sync.com', 'uidapi.com', 'smartclip.com', 'lgsmartad.com', 'is.com'
 ];
 
 // Analytics / tracking / session recording
@@ -97,12 +105,38 @@ const TRACKERS = [
   'connect.facebook.net', 'pixel.facebook.com', 'an.facebook.com',
   'cdn.mxpnl.com', 'logx.optimizely.com', 'count.optimizely.com',
   'yieldlab.net', 'permutive.com', 'tinypass.com', 'piano.io', 'cxense.com',
-  'krxd.net', 'exelator.com', 'eyeota.net', 'crwdcntrl.net', 'tealiumiq.com'
+  'krxd.net', 'exelator.com', 'eyeota.net', 'crwdcntrl.net', 'tealiumiq.com',
+  // Analytics / CDP / fingerprinting / customer engagement (d3ward reachable)
+  'cloudflareinsights.com', 'posthog.com', 'rudderstack.com', 'rudderlabs.com',
+  'snowplowanalytics.com', 'fingerprintjs.com', 'fpjs.io', 'siftscience.com',
+  'wzrkt.com', 'clevertap-prod.com', 'lr-ingest.com', 'singular.net', 'bnc.lt',
+  'trackcmp.net', 'braze.com', 'onesignal.com', 'klaviyo.com', 'customer.io', 'driftt.com'
 ];
 
 // Error trackers (checked by the adblock test)
+// d2wy8f7a9ursnm.cloudfront.net = Bugsnag's dedicated script CDN. bugsnag.com
+// only covers notify/sessions; the "Script execution" test loads the library
+// from the CloudFront distribution -> must be blocked separately.
 const ERROR_TRACKERS = [
-  'bugsnag.com', 'getsentry.com', 'sentry-cdn.com', 'sentry.io'
+  'bugsnag.com', 'd2wy8f7a9ursnm.cloudfront.net',
+  'getsentry.com', 'sentry-cdn.com', 'sentry.io', 'crashlytics.com'
+];
+
+// Mobile ad networks (pure ad-SDK / network domains)
+const MOBILE_ADS = [
+  'applovin.com', 'vungle.com', 'liftoff.io', 'pangleglobal.com', 'chartboost.com',
+  'supersonicads.com', 'fyber.com', 'inmobi.com', 'ironsource.mobi'
+];
+
+// Cryptominers / malvertising / pop-ups / malicious scripts
+const MALWARE = [
+  // Browser cryptominers
+  'coinimp.com', 'crypto-loot.org', 'monerominer.rocks',
+  // Malvertising / pop-up / pop-under networks
+  'popads.net', 'popcash.net', 'onclickads.net', 'clickadu.com',
+  'trafficjunky.net', 'exoclick.com', 'juicyads.com',
+  // Malicious / unwanted scripts
+  'statdynamic.com'
 ];
 
 // Targeted: hosts reported as "not blocked" by the test + extra independence.
@@ -140,7 +174,28 @@ const TEST_COVERAGE = [
   'tracking.rus.miui.com', 'grs.hicloud.com', 'metrics.data.hicloud.com', 'metrics2.data.hicloud.com',
   'logservice.hicloud.com', 'logservice1.hicloud.com', 'logbak.hicloud.com',
   'iadsdk.apple.com', 'api-adservices.apple.com', 'metrics.icloud.com', 'metrics.mzstatic.com',
-  'books-analytics-events.apple.com', 'weather-analytics-events.apple.com', 'notes-analytics-events.apple.com'
+  'books-analytics-events.apple.com', 'weather-analytics-events.apple.com', 'notes-analytics-events.apple.com',
+  // Only ad/tracking subdomains of content domains (NEVER block the main domain)
+  'aan.amazon.com', 'bingads.microsoft.com', 'ads.microsoft.com',
+  's.youtube.com', 'dai.google.com', 'metrics.brightcove.com', 'g.jwpsrv.com',
+  // d3ward "reachable" – only ad/tracking/telemetry subdomains
+  'advertising-api-eu.amazon.com', 'fls-na.amazon.com', 'device-metrics-us.amazon.com',
+  'device-metrics-us-2.amazon.com', 'mads-eu.amazon.com',
+  'c.bing.com', 'tagmanager.google.com', 'analytics.adobe.io', 'stats.wp.com',
+  'settings-win.data.microsoft.com', 'vortex.data.microsoft.com',
+  'vortex-win.data.microsoft.com', 'watson.telemetry.microsoft.com',
+  'browser.events.data.msn.com',
+  'udc.yahoo.com', 'advertising.yahoo.com', 'geo.yahoo.com', 'analytics.query.yahoo.com',
+  'advertising.yandex.ru', 'rum.browser-intake-datadoghq.com',
+  'tr.facebook.com', 'graph.facebook.com', 'graph.instagram.com', 'sc-analytics.appspot.com',
+  'ads-api.x.com', 'analytics.x.com', 'ads.x.com', 'd.reddit.com',
+  'mcs-va.tiktokv.com', 'mon.tiktokv.com',
+  'analytics.pinterest.com', 'widgets.pinterest.com',
+  'pixel.quora.com', 'qevents.quora.com', 'px.srvcs.tumblr.com',
+  'ads.vk.com', 'ad.mail.ru', 'top-fwz1.mail.ru',
+  'advertising.apple.com', 'xp.apple.com', 'ads.huawei.com', 'tracking.miui.com', 'ngfts.lge.com',
+  'ads.roku.com', 'events.launchdarkly.com', 'track.hubspot.com',
+  'munchkin.marketo.net', 'click.mailchimp.com', 'widget.intercom.io'
 ];
 
 // Generic ad-script paths (for script-bait tests / EasyList style)
@@ -154,7 +209,9 @@ const GENERIC_PATH_RULES = [
   // adblock-tester.com banners (Flash .swf, GIF, static PNG):
   //   /banners/pr_advertising_ads_banner.{swf,gif,png}
   { urlFilter: '_advertising_ads_banner', resourceTypes: RT },
-  { urlFilter: '/banners/pr_advertising', resourceTypes: RT }
+  { urlFilter: '/banners/pr_advertising', resourceTypes: RT },
+  // VK retargeting pixel (path on vk.com – main domain stays reachable)
+  { urlFilter: 'vk.com/rtrg', resourceTypes: ['image', 'xmlhttprequest', 'ping', 'script'] }
 ];
 
 // YouTube ad telemetry (only ad pings, NOT the video itself!)
@@ -186,7 +243,7 @@ function dedupe(arr) {
 
 const allDomains = dedupe([
   ...CONSENT, ...AB_TESTING, ...AFFILIATE, ...ADS, ...TRACKERS,
-  ...ERROR_TRACKERS, ...TEST_COVERAGE
+  ...ERROR_TRACKERS, ...MOBILE_ADS, ...MALWARE, ...TEST_COVERAGE
 ]);
 
 // Safety net: never block Twitch playback domains
@@ -219,4 +276,4 @@ fs.writeFileSync(outPath, JSON.stringify(rules, null, 2) + '\n');
 
 console.log(`rules.json created: ${rules.length} rules`);
 console.log(`  Consent: ${dedupe(CONSENT).length} · A/B: ${dedupe(AB_TESTING).length} · Affiliate: ${dedupe(AFFILIATE).length} · Ads: ${dedupe(ADS).length} · Trackers: ${dedupe(TRACKERS).length}`);
-console.log(`  Error trackers: ${dedupe(ERROR_TRACKERS).length} · Test coverage: ${dedupe(TEST_COVERAGE).length} · Path rules: ${GENERIC_PATH_RULES.length + YOUTUBE_PATH_RULES.length + TWITCH_PATH_RULES.length}`);
+console.log(`  Error trackers: ${dedupe(ERROR_TRACKERS).length} · Mobile ads: ${dedupe(MOBILE_ADS).length} · Malware: ${dedupe(MALWARE).length} · Test coverage: ${dedupe(TEST_COVERAGE).length} · Path rules: ${GENERIC_PATH_RULES.length + YOUTUBE_PATH_RULES.length + TWITCH_PATH_RULES.length}`);
