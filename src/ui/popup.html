@@ -9,25 +9,35 @@
 <body>
   <div class="app">
 
-    <header class="header">
-      <div class="header-logo">
-        <span class="logo-badge" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3 L19.5 6 V12.3 C19.5 16.5 16 19.4 12 21 C8 19.4 4.5 16.5 4.5 12.3 V6 Z" fill="#fff"/>
-            <path d="M8.6 12 l2.5 2.5 l4.5-4.8" fill="none" stroke="#6D28D9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <div class="header-text">
-          <div class="header-title">Stream<span class="brand-accent">block</span></div>
-          <div class="header-sub">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="statusText" data-i18n="status.active">Aktiv · Werbung blockiert</span>
-          </div>
-        </div>
+    <div class="announce-banner" id="announceBanner" hidden>
+      <span class="announce-ico" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </span>
+      <div class="announce-text">
+        <div class="announce-title" id="announceTitle"></div>
+        <div class="announce-body" id="announceBody"></div>
+        <a class="announce-link" id="announceLink" target="_blank" rel="noopener" hidden></a>
       </div>
-      <div class="header-right">
+      <button class="announce-close" id="announceClose" type="button" title="Schließen" aria-label="Schließen" data-i18n-aria="announce.dismiss" data-i18n-title="announce.dismiss">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <header class="header">
+      <span class="logo-badge" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3 L19.5 6 V12.3 C19.5 16.5 16 19.4 12 21 C8 19.4 4.5 16.5 4.5 12.3 V6 Z" fill="#fff"/>
+          <path d="M8.6 12 l2.5 2.5 l4.5-4.8" fill="none" stroke="#6D28D9" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <div class="header-title">Stream<span class="brand-accent">block</span></div>
+      <div class="hero-status">
+        <span class="status-led" id="statusDot" aria-hidden="true"></span>
+        <span class="status-text" id="statusText" data-i18n="status.active">Aktiv · Werbung blockiert</span>
+      </div>
+      <div class="hero-controls">
         <button id="openSettings" class="btn-icon" type="button" data-i18n-title="settings.title" data-i18n-aria="settings.title" title="Einstellungen">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
         <button id="openDetails" class="btn-details" type="button" data-i18n-title="header.detailsTitle" title="Detail-Ansicht öffnen">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 2.5h5v4h-5zM9.5 2.5h5v2h-5zM9.5 6h5v1.5h-5zM1.5 8.5h5v5h-5zM9.5 9h5v4.5h-5z"/></svg>
@@ -362,7 +372,7 @@
         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 3V1L5 4l3 3V5a3 3 0 11-3 3H3a5 5 0 105-5z"/></svg>
         <span data-i18n="footer.reset">Zurücksetzen</span>
       </button>
-      <span class="version" id="appVersion">v2.4.15</span>
+      <span class="version" id="appVersion">v2.4.16</span>
     </footer>
 
     <div class="welcome-overlay" id="welcomeOverlay" hidden>
@@ -392,6 +402,9 @@
       <button type="button" class="settings-backdrop" id="settingsBackdrop" aria-label="Close"></button>
       <div class="settings-panel glass" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="settings-head">
+          <span class="settings-head-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </span>
           <h2 id="settingsTitle" data-i18n="settings.title">Einstellungen</h2>
           <button type="button" class="settings-close" id="closeSettings" data-i18n-title="settings.close" title="Schließen" aria-label="Close">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -417,6 +430,19 @@
               <span class="toggle-slider"></span>
             </label>
           </div>
+
+          <div class="settings-divider" aria-hidden="true"></div>
+
+          <button type="button" id="settingsFeedbackBtn" class="settings-feedback" data-i18n-title="more.feedback.titleAttr" title="Feedback-Formular öffnen">
+            <span class="settings-feedback-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 14h5"/></svg>
+            </span>
+            <span class="settings-feedback-text">
+              <span class="settings-feedback-title" data-i18n="more.feedback.btn">Feedback senden</span>
+              <span class="settings-feedback-desc" data-i18n="more.feedback.desc">Bug melden oder Feature vorschlagen.</span>
+            </span>
+            <svg class="settings-feedback-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
         </div>
       </div>
     </div>

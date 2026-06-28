@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Streamblock",
-  "version": "2.4.15",
+  "version": "2.4.16",
   "description": "Streamblock blockiert Twitch- & YouTube-Werbung plus Network-Blocking, DOM- & Cosmetic-Filterung auf allen Seiten",
   "icons": {
     "16": "icons/icon16.png",

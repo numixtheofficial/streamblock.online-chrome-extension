@@ -278,12 +278,16 @@
   function openSettings() {
     if (!settingsOverlay) return;
     settingsOverlay.hidden = false;
+    document.body.classList.add('is-locked');
+    document.documentElement.style.overflow = 'hidden';
     requestAnimationFrame(() => settingsOverlay.classList.add('is-open'));
   }
 
   function closeSettings() {
     if (!settingsOverlay) return;
     settingsOverlay.classList.remove('is-open');
+    document.body.classList.remove('is-locked');
+    document.documentElement.style.overflow = '';
     setTimeout(() => { settingsOverlay.hidden = true; }, 220);
   }
 
@@ -364,6 +368,11 @@
     feedbackBtn.addEventListener('click', openFeedback);
   }
 
+  const settingsFeedbackBtn = document.getElementById('settingsFeedbackBtn');
+  if (settingsFeedbackBtn) {
+    settingsFeedbackBtn.addEventListener('click', openFeedback);
+  }
+
   if (openSettingsBtn) openSettingsBtn.addEventListener('click', openSettings);
   if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettings);
   if (settingsBackdrop) settingsBackdrop.addEventListener('click', closeSettings);
@@ -441,6 +450,57 @@
     if (verEl && mv) verEl.textContent = 'v' + mv;
   } catch (e) { /* ignore */ }
 
+  // ── Announcement banner (messages from the admin dashboard) ───────────────────
+  const ANN_DISMISS_KEY = 'sbAnnounceDismissed';
+
+  async function loadAnnouncement() {
+    const banner = document.getElementById('announceBanner');
+    if (!banner) return;
+
+    let ann = null;
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'GET_ANNOUNCEMENT' });
+      ann = res && res.announcement ? res.announcement : null;
+    } catch (_) { ann = null; }
+    if (!ann || !ann.id) { banner.hidden = true; return; }
+
+    let dismissed = 0;
+    try {
+      const d = await chrome.storage.local.get([ANN_DISMISS_KEY]);
+      dismissed = d[ANN_DISMISS_KEY] || 0;
+    } catch (_) { /* ignore */ }
+    if (dismissed === ann.id) { banner.hidden = true; return; }
+
+    const level = ['info', 'success', 'warning', 'critical'].includes(ann.level) ? ann.level : 'info';
+    banner.className = 'announce-banner announce-' + level;
+
+    const titleEl = document.getElementById('announceTitle');
+    const bodyEl = document.getElementById('announceBody');
+    if (titleEl) { titleEl.textContent = ann.title || ''; titleEl.hidden = !ann.title; }
+    if (bodyEl) bodyEl.textContent = ann.body || '';
+
+    const linkEl = document.getElementById('announceLink');
+    if (linkEl) {
+      if (ann.link_url) {
+        linkEl.href = ann.link_url;
+        linkEl.textContent = ann.link_label || ann.link_url;
+        linkEl.hidden = false;
+      } else {
+        linkEl.hidden = true;
+      }
+    }
+
+    banner.hidden = false;
+
+    const closeBtn = document.getElementById('announceClose');
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        banner.hidden = true;
+        try { chrome.storage.local.set({ [ANN_DISMISS_KEY]: ann.id }); } catch (_) { /* ignore */ }
+      };
+    }
+  }
+
   await SB_I18N.init();
   if (languageSelect) languageSelect.value = SB_I18N.getLanguage();
   SB_I18N.onChange(() => updateStatus(currentEnabled));
@@ -451,5 +511,7 @@
 
   checkForceUpdate();
   SB_I18N.onChange(checkForceUpdate); // refresh texts on language change
+
+  loadAnnouncement();
 
 })();

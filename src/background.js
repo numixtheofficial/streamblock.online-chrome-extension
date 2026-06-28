@@ -9,6 +9,7 @@
 
 import { initTelemetry } from './telemetry.js';
 import { initUpdateCheck, getForceState } from './update-check.js';
+import { initAnnounceCheck, checkAnnouncement, getAnnouncement } from './announce-check.js';
 
 const NETWORK_RULESET_ID = 'block_ads';
 const DEFAULT_METHODS = { streamSwap: true, strip: true, spoof: true, network: true, dom: true, cosmetic: true, youtube: true, youtubeDai: true, youtubeNet: false };
@@ -296,6 +297,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     getForceState().then(sendResponse);
     return true;
   }
+
+  if (msg.type === 'GET_ANNOUNCEMENT') {
+    // Re-check on popup open (fail-open to the cached state).
+    checkAnnouncement()
+      .then((ann) => sendResponse({ ok: true, announcement: ann || null }))
+      .catch(() => getAnnouncement().then((ann) => sendResponse({ ok: true, announcement: ann || null })));
+    return true;
+  }
 });
 
 // Tab navigation: set the icon on Twitch tabs
@@ -316,4 +325,6 @@ initTelemetry();
 // Force-update check: on status change, adjust protection/badge immediately.
 initUpdateCheck(() => { applyForceUpdateState(); });
 applyForceUpdateState();
+// Periodically check for popup announcements.
+initAnnounceCheck();
 
