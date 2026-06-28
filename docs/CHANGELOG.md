@@ -5,6 +5,28 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project loosely follows [Semantic Versioning](https://semver.org/).
 
+## [2.4.16]
+
+### Added
+- **Announcement banner.** A short message can be pushed from the admin dashboard
+  and shows as a banner at the top of the popup (e.g. "Twitch changed something,
+  a fix is on the way"). Colour-coded by level (info / success / warning /
+  important), with an optional action button. It is dismissible per message and
+  reappears only when a new message is sent. Read-only and fail-safe: if the
+  endpoint is unreachable, no banner is shown.
+
+### Changed
+- **Redesigned popup header.** New centered "hero" layout with the logo, brand,
+  live status line and the on/off control grouped in a glass control bar.
+- **Polished settings menu.** Proper gear icon, custom dropdown arrow, refined
+  glass panel, and a "Send feedback" shortcut directly in the settings.
+- **Custom scrollbar** in place of the default browser one (slim, themed).
+
+### Fixed
+- **Settings could be scrolled while open.** The overlay was anchored to the
+  animated app container and moved with the page; the page scroll is now frozen
+  while the settings are open, so the panel stays put.
+
 ## [2.4.15]
 
 ### Added
