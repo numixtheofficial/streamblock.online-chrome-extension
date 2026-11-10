@@ -11,7 +11,9 @@
  */
 
 const TELEMETRY_ENDPOINT = 'https://streamblock.online/api/collect.php';
-const TELEMETRY_SECRET   = 'c0c5ffcac25558b2125e4e84f4c040a1de70afb37810cc4808c4312192f19b76';
+// The real value is only inserted into official release builds. With this
+// placeholder, self-built copies send no telemetry (see isConfigured()).
+const TELEMETRY_SECRET   = 'AENDERN_set_in_release_build';
 const HEARTBEAT_MINUTES  = 5;
 const STREAM_TAB_URLS    = ['*://*.twitch.tv/*', '*://*.youtube.com/*'];
 
